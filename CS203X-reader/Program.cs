@@ -5,21 +5,26 @@ using CSLibrary.Events;
 class Program
 {
     private static readonly HighLevelInterface ReaderCE = new();
+    private static bool verbose = false;
 
     static async Task Main(string[] args)
     {
         string ipAddress;
         int? shutdownSeconds = null;
-
         if (args.Length > 0)
         {
             ipAddress = args[0];
-            Console.WriteLine($"Using IP address from command line: {ipAddress}");
-
-            if (args.Length > 1 && int.TryParse(args[1], out int seconds))
+            for (int i = 1; i < args.Length; i++)
             {
-                shutdownSeconds = seconds;
-                Console.WriteLine($"Application will shut down after {seconds} seconds");
+                if (args[i] == "--verbose" || args[i] == "-v")
+                {
+                    verbose = true;
+                }
+                else if (int.TryParse(args[i], out int seconds))
+                {
+                    shutdownSeconds = seconds;
+                    if (verbose) Console.WriteLine($"Application will shut down after {seconds} seconds");
+                }
             }
         }
         else
@@ -36,13 +41,13 @@ class Program
 
         if (ConnectReader(ipAddress))
         {
-            Console.WriteLine("Reader connected successfully.");
+            if (verbose) Console.WriteLine("Reader connected successfully.");
             StartReading();
 
             if (shutdownSeconds.HasValue)
             {
                 await Task.Delay(TimeSpan.FromSeconds(shutdownSeconds.Value));
-                Console.WriteLine("Shutdown timer elapsed. Exiting...");
+                if (verbose) Console.WriteLine("Shutdown timer elapsed. Exiting...");
                 return;
             }
 
@@ -76,11 +81,18 @@ class Program
 
     static void ReaderCE_MyRunningStateEvent(object? sender, OnStateChangedEventArgs e)
     {
-        Console.WriteLine($"Reader State : {e.state}");
+        if (verbose) Console.WriteLine($"Reader State : {e.state}");
     }
 
     static void ReaderCE_MyInventoryEvent(object? sender, OnAsyncCallbackEventArgs e)
     {
-        Console.WriteLine($"{e.info.epc},{e.info.rssi}");
+        if (verbose)
+        {
+            Console.WriteLine($"{e.info.epc},{e.info.rssi}");
+        }
+        else
+        {
+            Console.WriteLine(e.info.epc);
+        }
     }
 }
