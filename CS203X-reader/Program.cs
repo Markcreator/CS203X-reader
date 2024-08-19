@@ -5,14 +5,20 @@ using CSLibrary.Events;
 class Program
 {
     private static readonly HighLevelInterface ReaderCE = new();
-    private static string RFIDdata = string.Empty;
-    private static string readerResponse = string.Empty;
 
     static void Main(string[] args)
     {
-        Console.WriteLine("RFID Reader Console Application");
-        Console.Write("Enter IP address of the reader: ");
-        string? ipAddress = Console.ReadLine();
+        string ipAddress;
+        if (args.Length > 0)
+        {
+            ipAddress = args[0];
+            Console.WriteLine($"Using IP address from command line: {ipAddress}");
+        }
+        else
+        {
+            Console.Write("Enter IP address of the reader: ");
+            ipAddress = Console.ReadLine() ?? string.Empty;
+        }
 
         if (string.IsNullOrEmpty(ipAddress))
         {
@@ -24,17 +30,17 @@ class Program
         {
             Console.WriteLine("Reader connected successfully.");
             StartReading();
-            Console.WriteLine("Press any key to stop reading...");
-            Console.ReadKey();
-            StopReading();
+
+            // Keep the program running indefinitely
+            while (true)
+            {
+                Thread.Sleep(100); // Small delay to prevent CPU overuse
+            }
         }
         else
         {
             Console.WriteLine("Failed to connect to the reader.");
         }
-
-        Console.WriteLine("Press any key to exit...");
-        Console.ReadKey();
     }
 
     static bool ConnectReader(string ipAddress)
@@ -53,28 +59,13 @@ class Program
         ReaderCE.StartOperation(Operation.TAG_INVENTORY, false);
     }
 
-    static void StopReading()
-    {
-        if (ReaderCE.State != RFState.BUSY)
-            return;
-
-        ReaderCE.StopOperation(true);
-        while (ReaderCE.State != RFState.IDLE)
-            Thread.Sleep(1000);
-
-        ReaderCE.OnAsyncCallback -= ReaderCE_MyInventoryEvent;
-        ReaderCE.OnStateChanged -= ReaderCE_MyRunningStateEvent;
-    }
-
     static void ReaderCE_MyRunningStateEvent(object? sender, OnStateChangedEventArgs e)
     {
-        readerResponse = $"Reader State : {e.state}";
-        Console.WriteLine(readerResponse);
+        Console.WriteLine($"Reader State : {e.state}");
     }
 
     static void ReaderCE_MyInventoryEvent(object? sender, OnAsyncCallbackEventArgs e)
     {
-        RFIDdata = $"{e.info.epc},{e.info.rssi}";
-        Console.WriteLine(RFIDdata);
+        Console.WriteLine($"{e.info.epc},{e.info.rssi}");
     }
 }
