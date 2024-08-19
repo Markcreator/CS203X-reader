@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{425ACCDC-5A7C-4C2A-B3E2-267C8B77DA05}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CSLibrary</RootNamespace>
+    <AssemblyName>CSLibrary</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>15.0</OldToolsVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\CSLibrary.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkProfile />
+    <PublishUrl>http://localhost/CSLibrary/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\CSL RFID Demo Apps\Release Libraries\WindowsXP\NET2.0\</OutputPath>
+    <DefineConstants>TRACE;WIN32</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Optimize>True</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <DebugSymbols>True</DebugSymbols>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\WindowsXP\NET3.5\</OutputPath>
+    <DefineConstants>TRACE;CS468;WIN32;NET_BUILD</DefineConstants>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Optimize>True</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CSLibrary.Comm\CodeFileComm.cs" />
+    <Compile Include="CSLibrary.Comm\CodeFileCommCS101.cs" />
+    <Compile Include="CSLibrary.Comm\CodeFileCommNet.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CSLibrary.Comm\CodeFileCommNetBoard.cs" />
+    <Compile Include="CSLibrary.Comm\CodeFileCommSerial.cs" />
+    <Compile Include="CSLibrary.Comm\CodeFileCommUSB.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CSLibrary.Antenna\Antenna.cs" />
+    <Compile Include="CSLibrary.Antenna\AntennaConfig.cs" />
+    <Compile Include="CSLibrary.Antenna\AntennaList.cs" />
+    <Compile Include="CSLibrary.Antenna\AntennaListTypeConverter.cs" />
+    <Compile Include="CSLibrary.Antenna\AntennaStatus.cs" />
+    <Compile Include="CSLibrary.Antenna\AntennaTypeConverter.cs" />
+    <Compile Include="CSLibrary.Constants\AntennaPort.cs" />
+    <Compile Include="CSLibrary.Constants\AntennaSequenceMode.cs" />
+    <Compile Include="CSLibrary.Constants\FreqAgile.cs" />
+    <Compile Include="CSLibrary.Constants\SelectFlags.cs" />
+    <Compile Include="CSLibrary.Debug\CodeFileDebug.cs" />
+    <Compile Include="CSLibrary.Structures\AntennaPortCollections.cs" />
+    <Compile Include="CSLibrary.Structures\HST_ANT_CYCLES.cs" />
+    <Compile Include="CSLibrary.Structures\HST_INV_EPC_MATCH_CFG.cs" />
+    <Compile Include="CSLibrary.Text\HexEncoding.cs" />
+    <Compile Include="CSLibrary.Tools\NativeIOControl.cs" />
+    <Compile Include="CSLibrary.Debug\Debugger.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CSLibrary.Exception\CSLibrary.Exception.cs" />
+    <Compile Include="CSLibrary.LinkProfile\CSLibrary.LinkProfile.cs" />
+    <Compile Include="CSLibrary.LinkProfile\CSLibrary.LinkProfileList.cs" />
+    <Compile Include="CSLibrary.Structures\CSLibrary.Structures.CoolLog.cs" />
+    <Compile Include="CSLibrary.Tools\NativeRegistry.cs" />
+    <Compile Include="CSLibrary.Tools\NativeSetupAPI.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="CSLibrary.Constants\CSLibrary.Constants.cs" />
+    <Compile Include="CSLibrary.Constants\CSLibrary.Constants.Packet.cs" />
+    <Compile Include="CSLibrary.Core\CSLibrary.Events.cs" />
+    <Compile Include="CSLibrary.cs" />
+    <Compile Include="CSLibrary.Intel\Intel.Constants.cs" />
+    <Compile Include="CSLibrary.Intel\Intel.Structures.cs" />
+    <Compile Include="CSLibrary.Structures\CSLibrary.Structures.cs" />
+    <Compile Include="CSLibrary.Structures\CSLibrary.Structures.Packet.cs" />
+    <Compile Include="CSLibrary.Structures\CSLibrary.Structures.TagKill.cs" />
+    <Compile Include="CSLibrary.Structures\CSLibrary.Structures.TagLock.cs" />
+    <Compile Include="CSLibrary.Structures\CSLibrary.Structures.TagRead.cs" />
+    <Compile Include="CSLibrary.Structures\CSLibrary.Structures.TagWrite.cs" />
+    <Compile Include="CSLibrary.Text\CSLibrary.Text.cs" />
+    <Compile Include="CSLibrary.Net\CSLibrary.Net.Finder.cs" />
+    <Compile Include="CSLibrary.Net\CSLibrary.Net.Display.cs" />
+    <Compile Include="CSLibrary.Tools\CSLibrary.Tools.cs" />
+    <Compile Include="CSLibrary.Tools\CSLibrary.Win32.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\CSLibrary.snk">
+      <Link>CSLibrary.snk</Link>
+    </None>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

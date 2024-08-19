@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" ?>
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <targets>
+    <target name="network" xsi:type="Network" address="tcp://192.168.25.164:7070" layout="${longdate}@${level},${message}${newline}" />
+  </targets>
+  
+  <target name="csv" xsi:type="File" fileName="${basedir}/file.csv">
+    <layout xsi:type="CSVLayout">
+      <column name="time" layout="${longdate}" />
+      <column name="message" layout="${message}" />
+      <column name="logger" layout="${logger}"/>
+      <column name="level" layout="${level}"/>
+    </layout>
+  </target>
+  
+  <rules>
+    <logger name="CS101_DEBUGGER" minlevel="Trace" writeTo="network" />
+  </rules>
+</nlog>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CompactFramework>
+  <!-- v1.0 -->
+  <Release Version="1.0.2268.0" Name="1.0" />
+  <Release Version="1.0.3111.0" Name="1.0 SP1" />
+  <Release Version="1.0.3226.0" Name="1.0 SP2 (Recalled)" />
+  <Release Version="1.0.3227.0" Name="1.0 SP2 Beta" />
+  <Release Version="1.0.3316.0" Name="1.0 SP2" />
+  <Release Version="1.0.4177.0" Name="1.0 SP3 Beta" />
+  <Release Version="1.0.4292.0" Name="1.0 SP3" />
+
+  <!-- v2.0 -->
+  <Release Version="2.0.4037.0" Name="2.0 May CTP" />
+  <Release Version="2.0.4135.0" Name="2.0 Beta 1" />
+  <Release Version="2.0.4317.0" Name="2.0 November CTP" />
+  <Release Version="2.0.4278.0" Name="2.0 December CTP" />
+  <Release Version="2.0.5056.0" Name="2.0 Beta 2" />
+  <Release Version="2.0.5238.0" Name="2.0" />
+  <Release Version="2.0.6103.0" Name="2.0 SP1 Beta" />
+  <Release Version="2.0.6129.0" Name="2.0 SP1" />
+
+  <Release Version="2.0.7045.0" Name="2.0 SP2" />
+  <!-- v3.5 -->
+  <Release Version="3.5.7066.0" Name="3.5 Beta 1" />
+  <Release Version="3.5.7121.0" Name="3.5 Beta 2" />
+  <Release Version="3.5.7283.0" Name="3.5 RTM" />
+</CompactFramework>

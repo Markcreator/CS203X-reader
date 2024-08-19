@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="nlog" type="NLog.Config.ConfigSectionHandler, NLog" />
+  </configSections>
+
+  <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" throwExceptions="true">
+    <targets>
+      <target xsi:type="Network" name="tcpLogger" address="tcp://192.168.25.164:7070" newLine="true" maxMessageSize="128" onOverflow="Error"/>
+      <target xsi:type="Network" name="udpLogger" address="tcp://127.0.0.1:5555" newLine="true" maxMessageSize="128" onOverflow="Error"/>
+    </targets>
+    <rules>
+      <logger name="rfid_logger" minlevel="Debug" writeTo="tcpLogger" />
+    </rules>
+  </nlog>
+</configuration>

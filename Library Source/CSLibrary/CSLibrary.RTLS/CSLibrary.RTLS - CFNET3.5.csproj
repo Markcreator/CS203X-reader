@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8CC3461C-FA21-4054-9EA1-03863DA306D4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CSLibrary.RTLS</RootNamespace>
+    <AssemblyName>CSLibrary.RTLS</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>WindowsCE</PlatformFamilyName>
+    <PlatformID>E2BECB1F-8C8C-41ba-B736-9BE7D946A398</PlatformID>
+    <OSVersion>5.0</OSVersion>
+    <DeployDirSuffix>CSLibrary.RTLS</DeployDirSuffix>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <NativePlatformName>Windows CE</NativePlatformName>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\CS101 Debug Library\WindowsCE\NETCF3.5\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <DocumentationFile>..\..\CS101 Debug Library\WindowsCE\NETCF3.5\CSLibrary.RTLS.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\CS101 Demo Apps\Release Libraries\WindowsCE\NET3.5\</OutputPath>
+    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CS468 Release|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <OutputPath>bin\CS468 Release\</OutputPath>
+    <DefineConstants>TRACE;WindowsCE</DefineConstants>
+    <DocumentationFile>..\..\CS101 Release Library\WindowsCE\NETCF3.5\CSLibrary.RTLS.XML</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Customer Release|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>off</GenerateSerializationAssemblies>
+    <OutputPath>bin\Customer Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Engineering Release|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>off</GenerateSerializationAssemblies>
+    <OutputPath>bin\Engineering Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Constants\AdhocBeaconFlags.cs" />
+    <Compile Include="Constants\ErrorCode.cs" />
+    <Compile Include="Constants\IDFilterFlags.cs" />
+    <Compile Include="Constants\MID.cs" />
+    <Compile Include="Constants\Operation.cs" />
+    <Compile Include="Constants\Result.cs" />
+    <Compile Include="Constants\DeviceStatus.cs" />
+    <Compile Include="Constants\TagSearchRxOptionFlags.cs" />
+    <Compile Include="Constants\TagSearchTxOptionFlags.cs" />
+    <Compile Include="Constants\UDControlFlags.cs" />
+    <Compile Include="Constants\UpdateResult.cs" />
+    <Compile Include="MovingAverageCalculator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RollingMinimum.cs" />
+    <Compile Include="RTLSProvider.cs" />
+    <Compile Include="Structures\FirmwareUpgradeArgs.cs" />
+    <Compile Include="Structures\FirmwareUpgradeBlock.cs" />
+    <Compile Include="Structures\FirmwareUpgradeProgressEventArgs.cs" />
+    <Compile Include="Structures\Frame.cs" />
+    <Compile Include="Structures\GetVersionEventHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Structures\InventoryParms.cs" />
+    <Compile Include="Structures\IOperationParms.cs" />
+    <Compile Include="Structures\RangingParms.cs" />
+    <Compile Include="Structures\ReadParms.cs" />
+    <Compile Include="Structures\RTLSErrorException.cs" />
+    <Compile Include="Structures\SearchingParms.cs" />
+    <Compile Include="Structures\SelectMask.cs" />
+    <Compile Include="Structures\TagPositionNotifyArgs.cs" />
+    <Compile Include="Structures\TagSearchEventArgs.cs" />
+    <Compile Include="Structures\UDControlArgs.cs" />
+    <Compile Include="Structures\Version.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSLibrary.RTLS.Transport\CSLibrary.RTLS.Transport - CFNET3.5.csproj">
+      <Project>{8F23AE85-60BA-4A72-9462-D278B8344FFF}</Project>
+      <Name>CSLibrary.RTLS.Transport - CFNET3.5</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v3.5'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v3.5'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v3.5'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v3.5'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v3.5'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+</Project>
