@@ -6,13 +6,21 @@ class Program
 {
     private static readonly HighLevelInterface ReaderCE = new();
 
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         string ipAddress;
+        int? shutdownSeconds = null;
+
         if (args.Length > 0)
         {
             ipAddress = args[0];
             Console.WriteLine($"Using IP address from command line: {ipAddress}");
+
+            if (args.Length > 1 && int.TryParse(args[1], out int seconds))
+            {
+                shutdownSeconds = seconds;
+                Console.WriteLine($"Application will shut down after {seconds} seconds");
+            }
         }
         else
         {
@@ -31,10 +39,17 @@ class Program
             Console.WriteLine("Reader connected successfully.");
             StartReading();
 
-            // Keep the program running indefinitely
+            if (shutdownSeconds.HasValue)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(shutdownSeconds.Value));
+                Console.WriteLine("Shutdown timer elapsed. Exiting...");
+                return;
+            }
+
+            // Keep the program running indefinitely if no shutdown timer
             while (true)
             {
-                Thread.Sleep(100); // Small delay to prevent CPU overuse
+                await Task.Delay(100); // Small delay to prevent CPU overuse
             }
         }
         else

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CS203X-reader": {
+      "commandName": "Project",
+      "commandLineArgs": "localhost 1"
+    }
+  }
+}
