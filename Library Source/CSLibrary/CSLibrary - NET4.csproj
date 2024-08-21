@@ -36,7 +36,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\CSL RFID Demo Apps\Release Libraries\NET4\</OutputPath>
+    <OutputPath>..\..\Release Libraries\NET4\</OutputPath>
     <DefineConstants>CS468;WIN32;NET_BUILD</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
@@ -51,7 +51,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\CSL RFID Demo Apps\Release Libraries\NET4\</OutputPath>
+    <OutputPath>..\..\Release Libraries\NET4\</OutputPath>
     <DefineConstants>TRACE;CS468;WIN32;NET_BUILD</DefineConstants>
     <Optimize>true</Optimize>
   </PropertyGroup>

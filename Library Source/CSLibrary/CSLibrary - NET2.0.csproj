@@ -36,7 +36,7 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\CSL RFID Demo Apps\Release Libraries\WindowsXP\NET2.0\</OutputPath>
+    <OutputPath>..\Release Libraries\WindowsXP\NET2.0\</OutputPath>
     <DefineConstants>TRACE;WIN32</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
