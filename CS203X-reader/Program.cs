@@ -1,31 +1,28 @@
-﻿using CSLibrary;
+﻿using System.Collections.Concurrent;
+using System.Net;
+using CSLibrary;
 using CSLibrary.Constants;
 using CSLibrary.Events;
 
 class Program
 {
     private static readonly HighLevelInterface ReaderCE = new();
-    private static bool verbose = false;
+    private static readonly ConcurrentDictionary<string, float> RfidReadings = new();
+    private static readonly ConcurrentDictionary<string, long> RfidReadTimestamps = new();
+    private static readonly Timer RfidCleanupTimer;
+    private static int maxAgeSeconds = 60; // Default to 60 seconds
+
+    static Program()
+    {
+        RfidCleanupTimer = new Timer(CleanupRfidReadings, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+    }
 
     static async Task Main(string[] args)
     {
         string ipAddress;
-        int? shutdownSeconds = null;
         if (args.Length > 0)
         {
             ipAddress = args[0];
-            for (int i = 1; i < args.Length; i++)
-            {
-                if (args[i] == "--verbose" || args[i] == "-v")
-                {
-                    verbose = true;
-                }
-                else if (int.TryParse(args[i], out int seconds))
-                {
-                    shutdownSeconds = seconds;
-                    if (verbose) Console.WriteLine($"Application will shut down after {seconds} seconds");
-                }
-            }
         }
         else
         {
@@ -41,17 +38,11 @@ class Program
 
         if (ConnectReader(ipAddress))
         {
-            if (verbose) Console.WriteLine("Reader connected successfully.");
+            Console.WriteLine("Reader connected successfully. Starting HTTP service...");
+            StartHttpService();
             StartReading();
 
-            if (shutdownSeconds.HasValue)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(shutdownSeconds.Value));
-                if (verbose) Console.WriteLine("Shutdown timer elapsed. Exiting...");
-                return;
-            }
-
-            // Keep the program running indefinitely if no shutdown timer
+            // Keep the program running indefinitely
             while (true)
             {
                 await Task.Delay(100); // Small delay to prevent CPU overuse
@@ -81,18 +72,74 @@ class Program
 
     static void ReaderCE_MyRunningStateEvent(object? sender, OnStateChangedEventArgs e)
     {
-        if (verbose) Console.WriteLine($"Reader State : {e.state}");
+        Console.WriteLine($"Reader State : {e.state}");
     }
 
     static void ReaderCE_MyInventoryEvent(object? sender, OnAsyncCallbackEventArgs e)
     {
-        if (verbose)
+        RfidReadings.AddOrUpdate(e.info.epc.ToString(), e.info.rssi, (_, _) => e.info.rssi);
+        RfidReadTimestamps.AddOrUpdate(e.info.epc.ToString(), DateTimeOffset.UtcNow.ToUnixTimeSeconds(), (_, _) => DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+    }
+
+    static void StartHttpService()
+    {
+        var listener = new HttpListener();
+        listener.Prefixes.Add("http://*:8080/");
+        listener.Start();
+        Console.WriteLine("HTTP service started. Listening on http://*:8080/");
+
+        listener.GetContextAsync().ContinueWith(t =>
         {
-            Console.WriteLine($"{e.info.epc},{e.info.rssi}");
-        }
-        else
+            var context = t.Result;
+            var request = context.Request;
+            var response = context.Response;
+
+            if (request.Url.AbsolutePath == "/rfids")
+            {
+                int? maxAge = GetMaxAgeSeconds(request);
+                var rfidReadings = GetRfidReadings(maxAge);
+                var responseString = string.Join(Environment.NewLine, rfidReadings.Select(r => $"{r.Item1},{r.Item2}"));
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                response.ContentLength64 = buffer.Length;
+                response.OutputStream.Write(buffer, 0, buffer.Length);
+            }
+            else
+            {
+                response.StatusCode = (int)HttpStatusCode.NotFound;
+            }
+
+            response.OutputStream.Close();
+            StartHttpService(); // Recursively start the service again
+        }, TaskContinuationOptions.OnlyOnRanToCompletion);
+    }
+
+    static int? GetMaxAgeSeconds(HttpListenerRequest request)
+    {
+        if (request.QueryString["maxAge"] != null && int.TryParse(request.QueryString["maxAge"], out int maxAge))
         {
-            Console.WriteLine(e.info.epc);
+            return maxAge;
         }
+        return null;
+    }
+
+    static List<(string, float)> GetRfidReadings(int? maxAgeSeconds)
+    {
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var readings = RfidReadTimestamps.Where(r => maxAgeSeconds == null || (now - r.Value) <= maxAgeSeconds.Value)
+                                         .Select(r => (r.Key, RfidReadings[r.Key]))
+                                         .ToList();
+        return readings;
+    }
+
+    static void CleanupRfidReadings(object? state)
+    {
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        RfidReadTimestamps.Where(r => (now - r.Value) > maxAgeSeconds)
+                          .ToList()
+                          .ForEach(r =>
+                          {
+                              RfidReadings.TryRemove(r.Key, out _);
+                              RfidReadTimestamps.TryRemove(r.Key, out _);
+                          });
     }
 }
