@@ -39,14 +39,8 @@ class Program
         if (ConnectReader(ipAddress))
         {
             Console.WriteLine("Reader connected successfully. Starting HTTP service...");
-            StartHttpService();
             StartReading();
-
-            // Keep the program running indefinitely
-            while (true)
-            {
-                await Task.Delay(100); // Small delay to prevent CPU overuse
-            }
+            await StartHttpServiceAsync();
         }
         else
         {
@@ -81,19 +75,34 @@ class Program
         RfidReadTimestamps.AddOrUpdate(e.info.epc.ToString(), DateTimeOffset.UtcNow.ToUnixTimeSeconds(), (_, _) => DateTimeOffset.UtcNow.ToUnixTimeSeconds());
     }
 
-    static void StartHttpService()
+    static async Task StartHttpServiceAsync()
     {
         var listener = new HttpListener();
-        listener.Prefixes.Add("http://*:8080/");
+        listener.Prefixes.Add("http://localhost:8080/");
         listener.Start();
-        Console.WriteLine("HTTP service started. Listening on http://*:8080/");
+        Console.WriteLine("HTTP service started. Listening on http://localhost:8080/");
 
-        listener.GetContextAsync().ContinueWith(t =>
+        while (true)
         {
-            var context = t.Result;
-            var request = context.Request;
-            var response = context.Response;
+            try
+            {
+                HttpListenerContext context = await listener.GetContextAsync();
+                _ = HandleRequestAsync(context);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error handling request: {ex.Message}");
+            }
+        }
+    }
 
+    static async Task HandleRequestAsync(HttpListenerContext context)
+    {
+        var request = context.Request;
+        var response = context.Response;
+
+        try
+        {
             if (request.Url.AbsolutePath == "/rfids")
             {
                 int? maxAge = GetMaxAgeSeconds(request);
@@ -101,16 +110,22 @@ class Program
                 var responseString = string.Join(Environment.NewLine, rfidReadings.Select(r => $"{r.Item1},{r.Item2}"));
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                 response.ContentLength64 = buffer.Length;
-                response.OutputStream.Write(buffer, 0, buffer.Length);
+                await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
             }
             else
             {
                 response.StatusCode = (int)HttpStatusCode.NotFound;
             }
-
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error processing request: {ex.Message}");
+            response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        }
+        finally
+        {
             response.OutputStream.Close();
-            StartHttpService(); // Recursively start the service again
-        }, TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
     }
 
     static int? GetMaxAgeSeconds(HttpListenerRequest request)
