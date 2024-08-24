@@ -26,7 +26,9 @@ using System.Text;
 namespace CSLibrary.Diagnostics
 {
 #if DEBUG
-    using CSLibrary.Diagnostics.Config;
+    //using CSLibrary.Diagnostics.Config;
+    using NLog;
+    using NLog.Config;
 #endif
 
     /// <summary>

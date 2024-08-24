@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{DE67
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Program", "Program", "{DDA9A0A9-3796-4C87-BAF4-23DE4B612129}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSLibrary - NET4", "Library Source\CSLibrary\CSLibrary - NET4.csproj", "{9E398038-289E-4E94-B26F-63A51925BBA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSLibrary - NET4", "Library Source\CSLibrary\CSLibrary - NET4.csproj", "{9E398038-289E-4E94-B26F-63A51925BBA4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS203X-reader", "CS203X-reader\CS203X-reader.csproj", "{860486A8-6819-4253-B2D4-1616B5CCC0DB}"
 EndProject
