@@ -57,35 +57,25 @@ class Program
 
     static void StartReading()
     {
-        // Subscribe to the inventory event and state change event
         ReaderCE.OnAsyncCallback += ReaderCE_MyInventoryEvent;
         ReaderCE.OnStateChanged += ReaderCE_MyRunningStateEvent;
 
-        // Set up dynamic Q parameters for the reader's algorithm
         ReaderCE.SetDynamicQParms(5, 0, 15, 0, 10, 1);
-
-        // Set the reader to continuous operation mode
         ReaderCE.SetOperationMode(RadioOperationMode.CONTINUOUS);
-
-        // Optionally disable inventory flag; ensure this is needed based on your hardware's specifications
-        ReaderCE.Options.TagInventory.flags = SelectFlags.DISABLE_INVENTORY;
-
-        // Start the inventory operation; this is where the continuous reading happens
+        ReaderCE.Options.TagInventory.flags = SelectFlags.ZERO;
+        ReaderCE.SetInventoryDuration(1);
         ReaderCE.StartOperation(Operation.TAG_INVENTORY, false);
     }
 
     static void ReaderCE_MyRunningStateEvent(object? sender, OnStateChangedEventArgs e)
     {
-        // Log the current state of the reader
         Console.WriteLine($"Reader State: {e.state}");
     }
 
     static void ReaderCE_MyInventoryEvent(object? sender, OnAsyncCallbackEventArgs e)
     {
-        // Handle detected tag data: EPC and RSSI
         Console.WriteLine($"EPC: {e.info.epc}, RSSI: {e.info.rssi}");
 
-        // Update or add the tag's RSSI and timestamp
         RfidReadings.AddOrUpdate(
             e.info.epc.ToString(),
             e.info.rssi,
