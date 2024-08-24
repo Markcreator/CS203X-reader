@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Net;
-using System.Xml;
 using CSLibrary;
 using CSLibrary.Constants;
 using CSLibrary.Events;
@@ -12,6 +11,7 @@ class Program
     private static readonly ConcurrentDictionary<string, long> RfidReadTimestamps = new();
     private static readonly Timer RfidCleanupTimer;
     private static int maxAgeSeconds = 60; // Default to 60 seconds
+    private static string ipAddress = string.Empty;
 
     static Program()
     {
@@ -20,7 +20,6 @@ class Program
 
     static async Task Main(string[] args)
     {
-        string ipAddress;
         if (args.Length > 0)
         {
             ipAddress = args[0];
@@ -54,10 +53,9 @@ class Program
             return;
         }
 
-        if (ConnectReader(ipAddress))
+        if (ConnectReader())
         {
             Console.WriteLine("Reader connected successfully. Starting HTTP service...");
-            StartReading();
             await StartHttpServiceAsync(port);
         }
         else
@@ -66,10 +64,16 @@ class Program
         }
     }
 
-    static bool ConnectReader(string ipAddress)
+    static bool ConnectReader()
     {
+        ReaderCE.Disconnect();
         Result result = ReaderCE.Connect(ipAddress, 3000);
-        return result == Result.OK;
+        if(result == Result.OK)
+        {
+            StartReading();
+            return true;
+        }
+        return false;
     }
 
     static void StartReading()
@@ -91,6 +95,10 @@ class Program
         if (e.state == RFState.IDLE)
         {
             ReaderCE.StartOperation(Operation.TAG_INVENTORY, false);
+        }
+        else if (e.state == RFState.RESET)
+        {
+            ConnectReader();
         }
     }
 
