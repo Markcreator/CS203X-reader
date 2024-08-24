@@ -37,11 +37,28 @@ class Program
             return;
         }
 
+        int port;
+        if (args.Length > 1 && int.TryParse(args[1], out int parsedPort))
+        {
+            port = parsedPort;
+        }
+        else
+        {
+            Console.Write("Enter port number for the HTTP service: ");
+            port = int.Parse(Console.ReadLine() ?? string.Empty);
+        }
+
+        if (port <= 0 || port > 65535)
+        {
+            Console.WriteLine("Invalid port number.");
+            return;
+        }
+
         if (ConnectReader(ipAddress))
         {
             Console.WriteLine("Reader connected successfully. Starting HTTP service...");
             StartReading();
-            await StartHttpServiceAsync();
+            await StartHttpServiceAsync(port);
         }
         else
         {
@@ -94,12 +111,12 @@ class Program
     }
 
 
-    static async Task StartHttpServiceAsync()
+    static async Task StartHttpServiceAsync(int port)
     {
         var listener = new HttpListener();
-        listener.Prefixes.Add("http://localhost:8080/");
+        listener.Prefixes.Add($"http://localhost:{port}/");
         listener.Start();
-        Console.WriteLine("HTTP service started. Listening on http://localhost:8080/");
+        Console.WriteLine($"HTTP service started. Listening on http://localhost:{port}/");
 
         while (true)
         {
