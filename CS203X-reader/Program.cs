@@ -60,7 +60,7 @@ class Program
         ReaderCE.OnStateChanged += ReaderCE_MyRunningStateEvent;
         ReaderCE.SetDynamicQParms(5, 0, 15, 0, 10, 1);
         ReaderCE.SetOperationMode(RadioOperationMode.CONTINUOUS);
-        ReaderCE.Options.TagInventory.flags = SelectFlags.ZERO;
+        ReaderCE.Options.TagInventory.flags = SelectFlags.DISABLE_INVENTORY;
         ReaderCE.StartOperation(Operation.TAG_INVENTORY, false);
     }
 
@@ -71,6 +71,7 @@ class Program
 
     static void ReaderCE_MyInventoryEvent(object? sender, OnAsyncCallbackEventArgs e)
     {
+        Console.WriteLine($"EPC: {e.info.epc}, RSSI: {e.info.rssi}");
         RfidReadings.AddOrUpdate(e.info.epc.ToString(), e.info.rssi, (_, _) => e.info.rssi);
         RfidReadTimestamps.AddOrUpdate(e.info.epc.ToString(), DateTimeOffset.UtcNow.ToUnixTimeSeconds(), (_, _) => DateTimeOffset.UtcNow.ToUnixTimeSeconds());
     }
