@@ -61,15 +61,20 @@ class Program
         ReaderCE.OnStateChanged += ReaderCE_MyRunningStateEvent;
 
         ReaderCE.SetDynamicQParms(5, 0, 15, 0, 10, 1);
-        ReaderCE.SetOperationMode(RadioOperationMode.CONTINUOUS);
+        ReaderCE.SetOperationMode(RadioOperationMode.NONCONTINUOUS);
         ReaderCE.Options.TagInventory.flags = SelectFlags.ZERO;
-        ReaderCE.SetInventoryDuration(1);
+
         ReaderCE.StartOperation(Operation.TAG_INVENTORY, false);
     }
 
     static void ReaderCE_MyRunningStateEvent(object? sender, OnStateChangedEventArgs e)
     {
         Console.WriteLine($"Reader State: {e.state}");
+
+        if (e.state == RFState.IDLE)
+        {
+            ReaderCE.StartOperation(Operation.TAG_INVENTORY, false);
+        }
     }
 
     static void ReaderCE_MyInventoryEvent(object? sender, OnAsyncCallbackEventArgs e)
