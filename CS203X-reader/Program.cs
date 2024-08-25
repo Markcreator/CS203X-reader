@@ -155,9 +155,9 @@ class Program
     static async Task StartHttpServiceAsync(int port)
     {
         var listener = new HttpListener();
-        listener.Prefixes.Add($"http://localhost:{port}/");
+        listener.Prefixes.Add($"http://*:{port}/");
         listener.Start();
-        Console.WriteLine($"HTTP service started. Listening on http://localhost:{port}/");
+        Console.WriteLine($"HTTP service started. Listening on http://*:{port}/");
 
         while (true)
         {
