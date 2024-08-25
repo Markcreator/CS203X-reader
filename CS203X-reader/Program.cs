@@ -12,17 +12,28 @@ class Program
     private static readonly Timer RfidCleanupTimer;
     private static int maxAgeSeconds = 60; // Default to 60 seconds
     private static string ipAddress = string.Empty;
+    private static DateTime lastRfStateReceived = DateTime.UtcNow;
+    private static readonly Timer ReconnectTimer;
+    private static bool isReaderConnected = false;
 
     static Program()
     {
         RfidCleanupTimer = new Timer(CleanupRfidReadings, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+        ReconnectTimer = new Timer(CheckAndReconnectReader, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
     }
 
     static async Task Main(string[] args)
     {
-        if (args.Length > 0)
+        ipAddress = Environment.GetEnvironmentVariable("READER_IP_ADDRESS") ?? string.Empty;
+
+        if (!string.IsNullOrEmpty(ipAddress))
+        {
+            Console.WriteLine($"Using IP address from environment variable: {ipAddress}");
+        }
+        else if (args.Length > 0)
         {
             ipAddress = args[0];
+            Console.WriteLine($"Using IP address from command line argument: {ipAddress}");
         }
         else
         {
@@ -32,14 +43,20 @@ class Program
 
         if (string.IsNullOrEmpty(ipAddress))
         {
-            Console.WriteLine("IP address cannot be empty.");
-            return;
+            throw new Exception("IP address cannot be empty.");
         }
-
+        
+        string portStr = Environment.GetEnvironmentVariable("HTTP_PORT") ?? string.Empty;
         int port;
-        if (args.Length > 1 && int.TryParse(args[1], out int parsedPort))
+        if (!string.IsNullOrEmpty(portStr) && int.TryParse(portStr, out int parsedEnvPort))
+        {
+            port = parsedEnvPort;
+            Console.WriteLine($"Using port number from environment variable: {port}");
+        }
+        else if (args.Length > 1 && int.TryParse(args[1], out int parsedPort))
         {
             port = parsedPort;
+            Console.WriteLine($"Using port number from command line argument: {port}");
         }
         else
         {
@@ -53,27 +70,38 @@ class Program
             return;
         }
 
-        if (ConnectReader())
+        await ConnectReader();
+        Console.WriteLine("Reader connected successfully. Starting HTTP service...");
+        await StartHttpServiceAsync(port);
+    }
+
+    static async Task ConnectReader()
+    {
+        while (true)
         {
-            Console.WriteLine("Reader connected successfully. Starting HTTP service...");
-            await StartHttpServiceAsync(port);
-        }
-        else
-        {
-            Console.WriteLine("Failed to connect to the reader.");
+            StopReading();
+            Result result = ReaderCE.Connect(ipAddress, 3000);
+            if (result == Result.OK)
+            {
+                StartReading();
+                lastRfStateReceived = DateTime.UtcNow;
+                isReaderConnected = true;
+                return;
+            }
+            else
+            {
+                Console.WriteLine($"Failed to connect to reader. Retrying in 10 seconds...");
+                await Task.Delay(10000);
+            }
         }
     }
 
-    static bool ConnectReader()
+    static void StopReading()
     {
+        isReaderConnected = false;
         ReaderCE.Disconnect();
-        Result result = ReaderCE.Connect(ipAddress, 3000);
-        if(result == Result.OK)
-        {
-            StartReading();
-            return true;
-        }
-        return false;
+        ReaderCE.OnAsyncCallback -= ReaderCE_MyInventoryEvent;
+        ReaderCE.OnStateChanged -= ReaderCE_MyRunningStateEvent;
     }
 
     static void StartReading()
@@ -91,14 +119,11 @@ class Program
     static void ReaderCE_MyRunningStateEvent(object? sender, OnStateChangedEventArgs e)
     {
         Console.WriteLine($"Reader State: {e.state}");
+        lastRfStateReceived = DateTime.UtcNow;
 
         if (e.state == RFState.IDLE)
         {
             ReaderCE.StartOperation(Operation.TAG_INVENTORY, false);
-        }
-        else if (e.state == RFState.RESET)
-        {
-            ConnectReader();
         }
     }
 
@@ -118,6 +143,14 @@ class Program
         );
     }
 
+    static async void CheckAndReconnectReader(object? state)
+    {
+        if (isReaderConnected && (DateTime.UtcNow - lastRfStateReceived).TotalSeconds > 10)
+        {
+            Console.WriteLine("No RFState received in the last 10 seconds. Attempting to reconnect...");
+            await ConnectReader();
+        }
+    }
 
     static async Task StartHttpServiceAsync(int port)
     {
