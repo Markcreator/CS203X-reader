@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Net;
+using System.Text.Json;
 using CSLibrary;
 using CSLibrary.Constants;
 using CSLibrary.Events;
@@ -15,11 +16,16 @@ class Program
     private static DateTime lastRfStateReceived = DateTime.UtcNow;
     private static readonly Timer ReconnectTimer;
     private static bool isReaderConnected = false;
+    
+    private static Dictionary<string, string> epcMapping = new();
+    private static string gistUrl = string.Empty;
+    private static readonly Timer MappingRefreshTimer;
 
     static Program()
     {
         RfidCleanupTimer = new Timer(CleanupRfidReadings, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
         ReconnectTimer = new Timer(CheckAndReconnectReader, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+        MappingRefreshTimer = new Timer(RefreshEpcMapping, null, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(60));
     }
 
     static async Task Main(string[] args)
@@ -70,9 +76,54 @@ class Program
             return;
         }
 
+        gistUrl = Environment.GetEnvironmentVariable("GIST_URL") ?? string.Empty;
+        if (string.IsNullOrEmpty(gistUrl))
+        {
+            Console.Write("Enter the GitHub Gist URL for EPC mapping: ");
+            gistUrl = Console.ReadLine() ?? string.Empty;
+        }
+
+        if (!string.IsNullOrEmpty(gistUrl))
+        {
+            await FetchEpcMappingFromGist();
+        }
+
         await ConnectReader();
         Console.WriteLine("Reader connected successfully. Starting HTTP service...");
         await StartHttpServiceAsync(port);
+    }
+
+    static async Task FetchEpcMappingFromGist()
+    {
+        if (string.IsNullOrEmpty(gistUrl))
+        {
+            return;
+        }
+
+        using var client = new HttpClient();
+        try
+        {
+            string json = await client.GetStringAsync(gistUrl);
+            var newMapping = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+            if (newMapping != null)
+            {
+                epcMapping = newMapping;
+                Console.WriteLine($"Loaded {epcMapping.Count} EPC mappings from Gist.");
+            }
+            else
+            {
+                Console.WriteLine("Failed to deserialize EPC mapping from Gist.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching EPC mapping from Gist: {ex.Message}");
+        }
+    }
+
+    static async void RefreshEpcMapping(object? state)
+    {
+        await FetchEpcMappingFromGist();
     }
 
     static async Task ConnectReader()
@@ -183,8 +234,9 @@ class Program
             if (request.Url.AbsolutePath == "/rfids")
             {
                 int? maxAge = GetMaxAgeSeconds(request);
-                var rfidReadings = GetRfidReadings(maxAge);
-                var responseString = string.Join(Environment.NewLine, rfidReadings.Select(r => $"{r.Item1},{r.Item2}"));
+                bool includeMapping = request.QueryString["includeMapping"] != null;
+                var rfidReadings = GetRfidReadings(maxAge, includeMapping);
+                var responseString = string.Join(Environment.NewLine, rfidReadings.Select(r => string.Join(",", r)));
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                 response.ContentLength64 = buffer.Length;
                 await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
@@ -214,11 +266,19 @@ class Program
         return null;
     }
 
-    static List<(string, float)> GetRfidReadings(int? maxAgeSeconds)
+    static List<string[]> GetRfidReadings(int? maxAgeSeconds, bool includeMapping)
     {
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var readings = RfidReadTimestamps.Where(r => maxAgeSeconds == null || (now - r.Value) <= maxAgeSeconds.Value)
-                                         .Select(r => (r.Key, RfidReadings[r.Key]))
+                                         .Select(r =>
+                                         {
+                                             var result = new List<string> { r.Key, RfidReadings[r.Key].ToString() };
+                                             if (includeMapping && epcMapping.TryGetValue(r.Key, out string? mappedValue))
+                                             {
+                                                 result.Add(mappedValue);
+                                             }
+                                             return result.ToArray();
+                                         })
                                          .ToList();
         return readings;
     }
