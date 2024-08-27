@@ -20,7 +20,7 @@ COPY --from=build-env /app/out .
 
 ENV READER_IP_ADDRESS=10.10.1.230
 ENV HTTP_PORT=3001
-ENV GIST_URL=https://gist.githubusercontent.com/Markcreator/6b0e66213d8b78abb4796985731acd98/raw/e276fc5a05d1a8acaf964824da04e3a51a629ce6/EPC%2520Mappings
+ENV GIST_URL=https://gist.githubusercontent.com/Markcreator/6b0e66213d8b78abb4796985731acd98/raw/EPC%2520Mappings
 
 # Expose the port the app runs on
 EXPOSE 3001
