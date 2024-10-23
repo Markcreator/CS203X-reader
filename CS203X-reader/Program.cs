@@ -190,6 +190,13 @@ class Program
                 response.ContentLength64 = buffer.Length;
                 await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
             }
+            else if (request.Url.AbsolutePath == "/health")
+            {
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes("ok");
+                response.ContentLength64 = buffer.Length;
+                response.StatusCode = (int)HttpStatusCode.OK;
+                await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+            }
             else
             {
                 response.StatusCode = (int)HttpStatusCode.NotFound;

@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  rfid-reader:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rfid-reader
+    environment:
+      - READER_IP_ADDRESS=10.10.1.230
+      - HTTP_PORT=3001
+    ports:
+      - "3001:3001"
+    networks:
+      - rfid-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  rfid-network:
+    name: rfid-network
+    driver: bridge
