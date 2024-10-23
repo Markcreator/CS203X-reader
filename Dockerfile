@@ -18,7 +18,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 
-ENV READER_IP_ADDRESS=10.10.1.230
+ENV READER_IP_ADDRESS=10.10.69.69
 ENV HTTP_PORT=3001
 
 # Expose the port the app runs on
