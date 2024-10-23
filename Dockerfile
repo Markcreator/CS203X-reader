@@ -13,7 +13,7 @@ COPY --from=build-env /app/out .
 # Add curl for healthcheck
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-ENV READER_IP_ADDRESS=10.10.1.230
+ENV READER_IP_ADDRESS=10.10.69.69
 ENV HTTP_PORT=3001
 ENV ASPNETCORE_URLS=http://+:3001
 

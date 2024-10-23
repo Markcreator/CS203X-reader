@@ -7,9 +7,9 @@ services:
       dockerfile: Dockerfile
     container_name: rfid-reader
     environment:
-      - READER_IP_ADDRESS=10.10.1.230
+      - READER_IP_ADDRESS=10.10.69.69
       - HTTP_PORT=3001
-      - ASPNETCORE_URLS=http://+:3001  # Add this line
+      - ASPNETCORE_URLS=http://+:3001
     ports:
       - "3001:3001"
     networks:
