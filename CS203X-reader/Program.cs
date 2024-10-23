@@ -46,34 +46,10 @@ class Program
         {
             throw new Exception("IP address cannot be empty.");
         }
-        
-        string portStr = Environment.GetEnvironmentVariable("HTTP_PORT") ?? string.Empty;
-        int port;
-        if (!string.IsNullOrEmpty(portStr) && int.TryParse(portStr, out int parsedEnvPort))
-        {
-            port = parsedEnvPort;
-            Console.WriteLine($"Using port number from environment variable: {port}");
-        }
-        else if (args.Length > 1 && int.TryParse(args[1], out int parsedPort))
-        {
-            port = parsedPort;
-            Console.WriteLine($"Using port number from command line argument: {port}");
-        }
-        else
-        {
-            Console.Write("Enter port number for the HTTP service: ");
-            port = int.Parse(Console.ReadLine() ?? string.Empty);
-        }
-
-        if (port <= 0 || port > 65535)
-        {
-            Console.WriteLine("Invalid port number.");
-            return;
-        }
 
         await ConnectReader();
         Console.WriteLine("Reader connected successfully. Starting HTTP service...");
-        await StartHttpServiceAsync(port);
+        await StartHttpServiceAsync();
     }
 
     static async Task ConnectReader()
@@ -153,24 +129,30 @@ class Program
         }
     }
 
-    static async Task StartHttpServiceAsync(int port)
+    static async Task StartHttpServiceAsync()
     {
+        var port = Environment.GetEnvironmentVariable("HTTP_PORT") ?? "3001";
         var listener = new HttpListener();
-        listener.Prefixes.Add($"http://0.0.0.0:{port}/");
-        listener.Start();
-        Console.WriteLine($"HTTP service started. Listening on http://0.0.0.0:{port}/");
+        listener.Prefixes.Add($"http://+:{port}/");
 
-        while (true)
+        try
         {
-            try
+            listener.Start();
+            Console.WriteLine($"Server listening on port {port}...");
+
+            while (true)
             {
-                HttpListenerContext context = await listener.GetContextAsync();
+                var context = await listener.GetContextAsync();
                 _ = HandleRequestAsync(context);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error handling request: {ex.Message}");
-            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Server error: {ex.Message}");
+        }
+        finally
+        {
+            listener.Stop();
         }
     }
 
